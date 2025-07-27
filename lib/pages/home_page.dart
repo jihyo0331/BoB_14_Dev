@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class AssignmentPage extends StatefulWidget {
   const AssignmentPage({super.key});
@@ -207,6 +208,21 @@ class _AssignmentPageState extends State<AssignmentPage> {
                                     ),
                               ),
                             ),
+                            TextButton(
+                              child: const Text('복사'),
+                              onPressed: () {
+                                Clipboard.setData(
+                                  ClipboardData(
+                                    text: data['assignmentTitle'] ?? '',
+                                  ),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('과제 제목이 복사되었습니다'),
+                                  ),
+                                );
+                              },
+                            ),
                             ActionChip(
                               label: Text(isSubmitted ? '완료' : '진행중'),
                               backgroundColor: isSubmitted
@@ -241,10 +257,30 @@ class _AssignmentPageState extends State<AssignmentPage> {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        // Content
-                        Text(
-                          data['content'] ?? '',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                        // Content with copy button
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                data['content'] ?? '',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ),
+                            TextButton(
+                              child: const Text('복사'),
+                              onPressed: () {
+                                Clipboard.setData(
+                                  ClipboardData(text: data['content'] ?? ''),
+                                );
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('과제 내용이 복사되었습니다'),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 12),
                         // Footer: email and due date
@@ -307,13 +343,31 @@ class AssignmentDetailPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            Text(
-              data['assignmentTitle'] ?? '',
-              style: Theme.of(
-                context,
-              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            // 제목 Row + copy
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    data['assignmentTitle'] ?? '',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                TextButton(
+                  child: const Text('복사'),
+                  onPressed: () {
+                    Clipboard.setData(
+                      ClipboardData(text: data['assignmentTitle'] ?? ''),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('제목이 복사되었습니다')),
+                    );
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+            const Divider(),
             Row(
               children: [
                 const Icon(Icons.person, size: 20),
@@ -330,19 +384,50 @@ class AssignmentDetailPage extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
+            // 멘토 이메일 Row + copy
             Row(
               children: [
                 const Icon(Icons.email, size: 20),
                 const SizedBox(width: 8),
-                Text('멘토 이메일: ${data['mentorEmail'] ?? ''}'),
+                Expanded(child: Text('멘토 이메일: ${data['mentorEmail'] ?? ''}')),
+                TextButton(
+                  child: const Text('복사'),
+                  onPressed: () {
+                    Clipboard.setData(
+                      ClipboardData(text: data['mentorEmail'] ?? ''),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('멘토 이메일이 복사되었습니다')),
+                    );
+                  },
+                ),
               ],
             ),
-            const SizedBox(height: 16),
-            Text(
-              data['content'] ?? '',
-              style: Theme.of(context).textTheme.bodyLarge,
+            const Divider(),
+            // 과제 내용 Row + copy
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Text(
+                    data['content'] ?? '',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+                TextButton(
+                  child: const Text('복사'),
+                  onPressed: () {
+                    Clipboard.setData(
+                      ClipboardData(text: data['content'] ?? ''),
+                    );
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('과제 내용이 복사되었습니다')),
+                    );
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+            const Divider(),
             Row(
               children: [
                 const Icon(Icons.schedule, size: 20),
